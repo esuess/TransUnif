@@ -35,7 +35,7 @@ Suppose $U \sim UNIF(0, 1)$ and $X = U$. Then $P(0 < X < 1) = 1$. Also, because 
 $$f_Y(y) = \frac{\Gamma(\alpha + \beta)}{\Gamma(\alpha)\Gamma(\beta)} y^{\alpha - 1} (1-y)^{\beta - 1},$$
 
 for $0 < y < 1$, and positive parameters $\alpha$ and $\beta$. Here $\Gamma$ denotes the gamma function, which has $\Gamma(n+1) = n!$ for positive integer
-$n$, and may be evaluated more generally in $\textbf{R}$ using $gamma$. Thus $X = \sqrt(U) \sim BETA(2, 1)$.
+$n$, and may be evaluated more generally in $\textbf{R}$ using $gamma$. Thus $X = \sqrt{U} \sim BETA(2, 1)$.
 
 The following simulation shows what happens when one takes the square root of randomly chosen points u in the ten intervals $(0, 0.1]$, $(0.1, 0.2]$, through $(0.9, 1)$. In $\textbf{R}$, the names of density functions of programmed distributions begin with the letter d: thus the functions *dunif* and *dbeta* in the code above.
 
@@ -92,7 +92,7 @@ For most purposes, any of the following statements could be used to sample 10 ob
 
 So far, all of our examples have dealt with continuous distributions. Now we turn to an example where we sample from a binomial distribution.
 
-##EXAMPLE 4
+## EXAMPLE 4
 
 According to genetic theory the probability that any one
 offspring of a particular pair of guinea pigs will have straight hair is $1/4$. Suppose we want to simulate births of six offspring. That is, we want to simulate one realization of $X \sim BINOM(6, 1/4)$. One way to do this is to simulate six observations from $UNIF(0, 1)$. The probability that any one of these uniform observations is less than $1/4$ is $1/4$. So $X$ can be simulated as the sum of six logical variables, where **FALSE** is interpreted as $0$ and **TRUE** as $1: sum(runif(6) < 1/4))$. The sample function is also programmed to use *runif*. So $sum(sample(c(0,1), 6, repl=T, prob=c(3/4, 1/4))$ is an equivalent way to simulate $X$ as a sum.
