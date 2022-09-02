@@ -131,11 +131,15 @@ kap <- 3
 xx <- seq(1, 10, length=1000)
 pdf <- kap/xx^(kap+1)
 x <- (1 - runif(m))^(-1/kap)
+mean(x)
+var(x)
 
-cutp=seq(0, max(x)+.5, by=.5)
-hist(x[x<10], prob=T); lines(xx, pdf)
+cutp <-seq(0, max(x)+.5, by=.5)
+hist(x[x<10], prob=T, col="wheat", main="Pareto")
+lines(xx, pdf, col="blue", lwd=2)
 
-mean(x); var(x)
+mean(x)
+var(x)
 
 ```
 
