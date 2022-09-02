@@ -1,7 +1,7 @@
 ---
 title: "TransUnif"
 author: "Prof. Bruce E. Trumbo"
-format: html
+format: pdf
 ---
 
 ## Transformations of Standard Uniform Distributions
@@ -142,3 +142,101 @@ mean(x); var(x)
 FIGURE D shows a histogram of the results (except for the six observations that exceed 10) along with the density function. $\blacksquare$
 
 # Transformations Involving Standard Normal Distributions
+
+Normal distributions play an important role in probability and statistics, and so it is important to know how to simulate samples from normal distributions. The $\textbf{R}$ function rnorm samples from the standard normal distribution. At the end of this section we indicate how to transform standard uniform observations into standard normal ones. In the first example below, we look at some relationships between standard normal and other distributions.
+
+## EXAMPLE 6
+
+If $Z \sim NORM(0, 1)$, then $X = Z^2 \sim CHISQ(1)$, that is,
+the chi-squared distribution with one degree of freedom. Also, if $Z_1$ and
+$Z_2$ are independently standard normal, then $Q = Z_1^2 + Z_2^2 \sim CHISQ(2) =
+EXP(1/2)$, where $E(Q) = 2$ and $V(Q) = 4$. These are standard results
+from probability theory used in mathematical statistics. Formal proofs,
+not shown here, use transformation theory or moment generating functions.
+We illustrate these results via simulations.
+
+```{r}
+set.seed(12)
+m <- 10000
+z1 <- rnorm(m)
+z2 <- rnorm(m)
+x <- z1^2
+q <- z1^2 + z2^2
+
+par(mfrow=c(2,1))
+mx=max(x, q); xx = seq(0, mx, length=1000)
+hist(x, prob=T, ylim=c(0,.7), xlim=c(0, mx),
+col="wheat", main="CHISQ(1)")
+lines(xx, dchisq(xx, 1), col="blue", lwd=2)
+hist(q, prob=T, ylim=c(0,.7), xlim=c(0, mx),
+col="wheat", main="CHISQ(2)")
+lines(xx, dexp(xx, 1/2), col="red")
+lines(xx, dchisq(xx, 2), col="blue", lwd=2,
+lty="dashed")
+par(mfrow=c(1,1))
+
+mean(x)
+var(x)
+
+mean(q)
+var(q)
+```
+
+Graphical results are shown in FIGURE E. In the lower panel, the double
+plotting with two line styles shows that the density functions of $EXP(1/2)$
+and $CHISQ(2)$ are the same. $\blacksquare$
+
+The following example illustrates the idea behind the most common
+method of generating standard normal random variables from standard
+uniform random variables.
+
+## EXAMPLE 7
+
+Suppose an archer shoots arrows at a distant target. She is
+aiming at the bull's eye, which we take to be the origin of a plot, but the hits
+are subject to random error. We model the vertical and horizontal displace-
+ments from the origin as independent standard normal random variables $Z_1$ and $Z_2$ . We know from EXAMPLE 6 that each arrow hits at a random
+distance $D = \sqrt{Z_1^2 + Z_2^2}$ from the origin, where $D^2 = Q ∼ EXP(1/2)$.
+
+Now consider a line through the arrow’s position to the origin, and the angle $\Theta$ it makes with the positive $Z_1$-axis measured in degrees counter-clockwise. Intuitively, it seems that $\Theta \sim UNIF(0, 360)$, which is illustrated by the following simulation. In the code below, the arctangent takes values between −90 and 90 degrees. Adding 180 degrees precisely when $Z_1$ is negative completes the circle from −90 to 270 degrees, and taking the resulting value modulo 360 (code %%) adjusts the values to lie in the interval (0, 360).  The resulting graph is shown in Figure F.
+
+```{r}
+set.seed(1212)
+m <- 10000
+z1 <- rnorm(m)
+z2 = rnorm(m)
+
+par(mfrow=c(2,1))
+# squared distance from origin
+d2 <- z1^2 + z2^2
+hist(d2, prob=T, col="wheat")
+dd <- seq(0, max(d2), length=1000)
+lines(dd, dchisq(dd, 2), col="blue", lwd=2)
+# angle in degrees (counterclockwise from right)
+th <- ((180/pi)*atan(z1/z2) + 180*(z1<0)) %% 360
+hist(th, prob=T, col="wheat")
+tt <- seq(0, 360, length = 1000)
+lines(tt, dunif(tt, 0, 360), col="blue", lwd=2)
+par(mfrow=c(1,1))
+```
+
+Thus the position of the hit can be modeled in polar coordinates by
+using two standard uniform random variables:
+
+- The angle can be simulated as a linear transformation of a simulated
+observation from a standard uniform distribution (see EXAMPLE 1 and PROBLEM 1).
+- The distance from the origin is the square root of an exponential random variable, and that exponential random variable can be obtained as a log transform of a standard uniform (see EXAMPLE 3 and PROBLEM 4).
+
+Conversion from polar to rectangular coordinates reverts to the two inde-
+pendent standard normal random variables with which we started. This
+procedure of simulating two independent standard normal observations
+from two simulated independent standard uniform ones is known as the
+Box-Muller transformation. It is explored further in PROBLEM 9. $\blacksquare$
+
+## PROBLEMS
+
+1) *General linear transformation.* Let $U \sim UNIF(0, 1)$ and $X = aU + b$,
+where $a = 0$. Use the method of EXAMPLE 1 to find the distribution of $X$.
+In particular, what is the distribution of $Y = 1 − U$?
+
+2) Two

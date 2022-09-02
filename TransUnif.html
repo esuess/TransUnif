@@ -252,6 +252,93 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section>
 <section id="transformations-involving-standard-normal-distributions" class="level1">
 <h1>Transformations Involving Standard Normal Distributions</h1>
+<p>Normal distributions play an important role in probability and statistics, and so it is important to know how to simulate samples from normal distributions. The <span class="math inline">\(\textbf{R}\)</span> function rnorm samples from the standard normal distribution. At the end of this section we indicate how to transform standard uniform observations into standard normal ones. In the first example below, we look at some relationships between standard normal and other distributions.</p>
+<section id="example-6" class="level2">
+<h2 class="anchored" data-anchor-id="example-6">EXAMPLE 6</h2>
+<p>If <span class="math inline">\(Z \sim NORM(0, 1)\)</span>, then <span class="math inline">\(X = Z^2 \sim CHISQ(1)\)</span>, that is, the chi-squared distribution with one degree of freedom. Also, if <span class="math inline">\(Z_1\)</span> and <span class="math inline">\(Z_2\)</span> are independently standard normal, then <span class="math inline">\(Q = Z_1^2 + Z_2^2 \sim CHISQ(2) = EXP(1/2)\)</span>, where <span class="math inline">\(E(Q) = 2\)</span> and <span class="math inline">\(V(Q) = 4\)</span>. These are standard results from probability theory used in mathematical statistics. Formal proofs, not shown here, use transformation theory or moment generating functions. We illustrate these results via simulations.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">12</span>)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="dv">10000</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>z1 <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(m)</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>z2 <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(m)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> z1<span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>q <span class="ot">&lt;-</span> z1<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> z2<span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">1</span>))</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>mx<span class="ot">=</span><span class="fu">max</span>(x, q); xx <span class="ot">=</span> <span class="fu">seq</span>(<span class="dv">0</span>, mx, <span class="at">length=</span><span class="dv">1000</span>)</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(x, <span class="at">prob=</span>T, <span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">0</span>,.<span class="dv">7</span>), <span class="at">xlim=</span><span class="fu">c</span>(<span class="dv">0</span>, mx),</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a><span class="at">col=</span><span class="st">"wheat"</span>, <span class="at">main=</span><span class="st">"CHISQ(1)"</span>)</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(xx, <span class="fu">dchisq</span>(xx, <span class="dv">1</span>), <span class="at">col=</span><span class="st">"blue"</span>, <span class="at">lwd=</span><span class="dv">2</span>)</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(q, <span class="at">prob=</span>T, <span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">0</span>,.<span class="dv">7</span>), <span class="at">xlim=</span><span class="fu">c</span>(<span class="dv">0</span>, mx),</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a><span class="at">col=</span><span class="st">"wheat"</span>, <span class="at">main=</span><span class="st">"CHISQ(2)"</span>)</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(xx, <span class="fu">dexp</span>(xx, <span class="dv">1</span><span class="sc">/</span><span class="dv">2</span>), <span class="at">col=</span><span class="st">"red"</span>)</span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(xx, <span class="fu">dchisq</span>(xx, <span class="dv">2</span>), <span class="at">col=</span><span class="st">"blue"</span>, <span class="at">lwd=</span><span class="dv">2</span>,</span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a><span class="at">lty=</span><span class="st">"dashed"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="TransUnif_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>))</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1.003402</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">var</span>(x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1.939824</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(q)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2.001475</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">var</span>(q)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 3.917715</code></pre>
+</div>
+</div>
+<p>Graphical results are shown in FIGURE E. In the lower panel, the double plotting with two line styles shows that the density functions of <span class="math inline">\(EXP(1/2)\)</span> and <span class="math inline">\(CHISQ(2)\)</span> are the same. <span class="math inline">\(\blacksquare\)</span></p>
+<p>The following example illustrates the idea behind the most common method of generating standard normal random variables from standard uniform random variables.</p>
+</section>
+<section id="example-7" class="level2">
+<h2 class="anchored" data-anchor-id="example-7">EXAMPLE 7</h2>
+<p>Suppose an archer shoots arrows at a distant target. She is aiming at the bull’s eye, which we take to be the origin of a plot, but the hits are subject to random error. We model the vertical and horizontal displace- ments from the origin as independent standard normal random variables <span class="math inline">\(Z_1\)</span> and <span class="math inline">\(Z_2\)</span> . We know from EXAMPLE 6 that each arrow hits at a random distance <span class="math inline">\(D = \sqrt{Z_1^2 + Z_2^2}\)</span> from the origin, where <span class="math inline">\(D^2 = Q ∼ EXP(1/2)\)</span>.</p>
+<p>Now consider a line through the arrow’s position to the origin, and the angle <span class="math inline">\(\Theta\)</span> it makes with the positive <span class="math inline">\(Z_1\)</span>-axis measured in degrees counter-clockwise. Intuitively, it seems that <span class="math inline">\(\Theta \sim UNIF(0, 360)\)</span>, which is illustrated by the following simulation. In the code below, the arctangent takes values between −90 and 90 degrees. Adding 180 degrees precisely when <span class="math inline">\(Z_1\)</span> is negative completes the circle from −90 to 270 degrees, and taking the resulting value modulo 360 (code %%) adjusts the values to lie in the interval (0, 360). The resulting graph is shown in Figure F.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1212</span>)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="dv">10000</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>z1 <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(m)</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>z2 <span class="ot">=</span> <span class="fu">rnorm</span>(m)</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">1</span>))</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a><span class="co"># squared distance from origin</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>d2 <span class="ot">&lt;-</span> z1<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> z2<span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(d2, <span class="at">prob=</span>T, <span class="at">col=</span><span class="st">"wheat"</span>)</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>dd <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="fu">max</span>(d2), <span class="at">length=</span><span class="dv">1000</span>)</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(dd, <span class="fu">dchisq</span>(dd, <span class="dv">2</span>), <span class="at">col=</span><span class="st">"blue"</span>, <span class="at">lwd=</span><span class="dv">2</span>)</span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a><span class="co"># angle in degrees (counterclockwise from right)</span></span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>th <span class="ot">&lt;-</span> ((<span class="dv">180</span><span class="sc">/</span>pi)<span class="sc">*</span><span class="fu">atan</span>(z1<span class="sc">/</span>z2) <span class="sc">+</span> <span class="dv">180</span><span class="sc">*</span>(z1<span class="sc">&lt;</span><span class="dv">0</span>)) <span class="sc">%%</span> <span class="dv">360</span></span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(th, <span class="at">prob=</span>T, <span class="at">col=</span><span class="st">"wheat"</span>)</span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>tt <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">360</span>, <span class="at">length =</span> <span class="dv">1000</span>)</span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(tt, <span class="fu">dunif</span>(tt, <span class="dv">0</span>, <span class="dv">360</span>), <span class="at">col=</span><span class="st">"blue"</span>, <span class="at">lwd=</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="TransUnif_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Thus the position of the hit can be modeled in polar coordinates by using two standard uniform random variables:</p>
+<ul>
+<li>The angle can be simulated as a linear transformation of a simulated observation from a standard uniform distribution (see EXAMPLE 1 and PROBLEM 1).</li>
+<li>The distance from the origin is the square root of an exponential random variable, and that exponential random variable can be obtained as a log transform of a standard uniform (see EXAMPLE 3 and PROBLEM 4).</li>
+</ul>
+<p>Conversion from polar to rectangular coordinates reverts to the two inde- pendent standard normal random variables with which we started. This procedure of simulating two independent standard normal observations from two simulated independent standard uniform ones is known as the Box-Muller transformation. It is explored further in PROBLEM 9. <span class="math inline">\(\blacksquare\)</span></p>
+</section>
+<section id="problems" class="level2">
+<h2 class="anchored" data-anchor-id="problems">PROBLEMS</h2>
+<ol type="1">
+<li><p><em>General linear transformation.</em> Let <span class="math inline">\(U \sim UNIF(0, 1)\)</span> and <span class="math inline">\(X = aU + b\)</span>, where <span class="math inline">\(a = 0\)</span>. Use the method of EXAMPLE 1 to find the distribution of <span class="math inline">\(X\)</span>. In particular, what is the distribution of <span class="math inline">\(Y = 1 − U\)</span>?</p></li>
+<li><p>Two</p></li>
+</ol>
+</section>
 </section>
 
 </main>
