@@ -1,0 +1,144 @@
+---
+title: "TransUnif"
+author: "Prof. Bruce E. Trumbo"
+format: html
+---
+
+## Transformations of Standard Uniform Distributions
+
+We have seen that the $\textbf{R}$ function runif uses a random number generator to simulate a sample from the standard uniform distribution $UNIF(0, 1)$. All of our simulations use standard uniform random variables or are based on transforming such random variables to obtain other distributions of interest. Included in the $\textbf{R}$ language are some functions that implement suitable
+transformations. For example, *rnorm*, *rexp*, *rbeta*, and *rbinom* simulate samples from normal, exponential, beta, and binomial distributions, respectively. Also, the function sample is based on simulated realizations of $UNIF(0, 1)$.
+
+A systematic study of the programming methods required to transform
+uniform distributions into other commonly used distributions involves tech nical details be beyond the scope of this book. (For a more extensive treatment, see Chapter 3 of Fishman (1996).) However, if you are going do simulations and trust the results, we feel you should have some idea how such transformations are accomplished—at least in a few familiar and elementary cases. The purpose of this section is to provide some of the basic theory and a few simple examples of transformations from uniform distributions to other familiar distributions. Also, this discussion provides the
+opportunity for a brief review of some distributions we will use later on.
+
+## EXAMPLE 1
+
+A real function (transformation) of a random variable is
+again a random variable. For example, if $U \sim UNIF(0, 1)$, then the linear function $X = g(U) = 4U + 2$ is a random variable uniformly distributed on the interval $(2, 6)$. That is, $X \sim UNIF(2, 6)$. The transformation $g$ stretches the distribution of $U$ by a factor of $4$ and then shifts it two units to the right. Recalling that $F_U(u) = P(U \le u) = u$, for $0 < u < 1$, we have the following formal demonstration. For $2 < x < 6$,
+
+$$F_X(x)= P(X \le x) = P(g(U) \le x) = P(4U + 2 \le x) = P(g^{−1}(X) \le g^{−1} (x)) $$ 
+$$ = P\left(U \le (x − 2)/4\right) = (x − 2)/4.$$
+
+which is the density function of $UNIF(2, 6)$.
+
+In $\textbf{R}$, the second and third parameters of the function runif specify the left and right endpoints, respectively, of $UNIF(\theta_1, \theta_2)$, the uniform distribution on the interval $(\theta_1, \theta_2)$. Thus each of the statements $4*runif(10) + 2$, $4*runif(10, 0, 1) + 2$, and $runif(10, 2, 6)$ simulates $10$ observations from $UNIF(2, 6)$. PROBLEM 1 asks you to consider a more general version of this example. $\blacksquare$
+
+In EXAMPLE 1, we have found the CDF of the transformed random
+variable, and then used the CDF to find its density function. This method works in a large variety of situations. Next, we see that a particular nonlinear transformation of a standard uniform random distribution is a member of the beta family of distributions. We leave the formal demonstration to PROBLEM 2 and use a simulation and graphics to illustrate the effect of the transformation.
+
+## EXAMPLE 2
+
+Suppose $U \sim UNIF(0, 1)$ and $X = U$. Then $P(0 < X < 1) = 1$. Also, because the square root of a number in $(0, 1)$ is larger than the number itself, we know intuitively that the distribution of X must concentrate its probability toward the right end of $(0, 1)$. Specifically, the method of EXAMPLE 1 shows that $X$ has the cumulative distribution function $F_X(x) = x^2$, and the density function $f_X(x) = 2x$, for $0 < x < 1$.  Recall that if $Y \sim BETA(\alpha, \beta)$ then its density function is
+
+$$f_Y(y) = \frac{\Gamma(\alpha + \beta)}{\Gamma(\alpha)\Gamma(\beta)} y^{\alpha - 1} (1-y)^{\beta - 1},$$
+
+for $0 < y < 1$, and positive parameters $\alpha$ and $\beta$. Here $\Gamma$ denotes the gamma function, which has $\Gamma(n+1) = n!$ for positive integer
+$n$, and may be evaluated more generally in $\textbf{R}$ using $gamma$. Thus $X = \sqrt(U) \sim BETA(2, 1)$.
+
+The following simulation shows what happens when one takes the square root of randomly chosen points u in the ten intervals $(0, 0.1]$, $(0.1, 0.2]$, through $(0.9, 1)$. In $\textbf{R}$, the names of density functions of programmed distributions begin with the letter d: thus the functions *dunif* and *dbeta* in the code above.
+
+```{r}
+set.seed(1212)
+m <- 10000
+u <- runif(m)
+x <- sqrt(u)
+
+par(mfrow=c(1,2))
+hh = seq(-.1, 1.1, length=1000); cutp = seq(0, 1, by = .1)
+hist(u, breaks=cutp, prob=T, col="wheat", ylim=c(0,2),
+xlim=c(-.1, 1.1), main="UNIF(0,1)")
+lines(hh, dunif(hh), col="blue", lwd=2)
+hist(x, breaks=sqrt(cutp), prob=T, col="wheat",
+xlim=c(-.1, 1.1), main="BETA(1,2)")
+lines(hh, dbeta(hh, 2, 1), col="blue", lwd=2)
+par(mfrow=c(1,1))
+
+```
+
+Graphical results are shown in FIGURE A. Each bar in each histogram represents about a thousand points, representing one tenth of the total probability. Density functions of $UNIF(0, 1)$ and $BETA(2, 1)$ are superimposed on their respective histograms.
+
+By taking different powers of a standard uniform random variable one can obtain random variables with distributions *BETA(\alpha, 1)* (see PROBLEM 2). More intricate methods are required to sample from some other members of the distribution family *BETA(\alpha, \beta)* (see PROBLEM 3). Optimal methods for all cases are available in $\textbf{R}$ as the function *rbeta*. Thus either of the statements *sqrt(runif(10))* or *rbeta(10, 2, 1)* could be used to simulate 10 observations from $BETA(2, 1)$, but the latter code is more convenient because it can be used for any member of the beta family. $\blacksquare$
+
+Now we summarize what we have seen so far.
+
+- In EXAMPLE 1, the CDF of $X$ is $F_X(x) = (x − 2)/4$, for $2 < x < 6$. The inverse of the CDF is called the **quantile function**. Here it is $F_X^{-1}(u) = 2 + 4u$, obtained by solving $F_X(x) = u$ for $x$ in terms of $u$. This is the function $g$ we used to transform $U \sim UNIF(0, 1)$ to get the random variable $X = g(U) \sim UNIF(2, 6)$.
+- In EXAMPLE 2, the CDF $F_X(x) = x^2$ , is used to obtain $f_X(x) = 2x$, for $0 < x < 1$. Thus $X$ has quantile function $F_X(u) = u$, which is the function $g$ used to transform $U \sim UNIF(0, 1)$ to get the the random variable $X \sim BETA(2, 1)$.
+
+Suppose we want to simulate values from a distribution whose quantile function is known. A general principle is that this quantile function is the function $g$ such that $X = g(U)$ has the desired distribution, where $U \sim UNIF(0, 1)$. Specifically, in the next example, we want to simulate observations $X \sim EXP(1)$, the exponential distribution with rate 1. Accordingly, we find the quantile function of $EXP(1)$ and use it to transform observations from $UNIF(0, 1)$.
+
+## EXAMPLE 3
+
+Throughout this example let $x > 0$ and $0 < u < 1$.
+We wish to simulate observations from the distribution $EXP(1)$, which has density function $f(x) = e^{−x}$ and CDF $F(x) = 1 − e^{−x}$. Solving $u = 1 − e^{−x}$ for $x$ in terms of $u$, we have the quantile function $F^{−1}(u) = −\ln(1 − u)$. Thus $X = −\ln(1 − U ) \sim EXP(1)$. Because $1 − U \sim UNIF(0, 1)$ it is simpler to simulate observations from this exponential distribution as $X = −\ln U$ (see PROBLEM 1).
+
+The following $\textbf{R}$ code demonstrates that a histogram of 100,000 observations generated in this way very nearly fits the density function of $EXP(1)$, as seen in FIGURE B. Furthermore, the mean and standard deviation of the simulated values are both nearly 1, which is the mean and standard deviation of the distribution $EXP(1)$.
+
+```{r}
+set.seed(1234)
+m <- 100000
+u <- runif(m)
+x <- -log(u)
+
+hist(x, prob=T, col="wheat", main="EXP(1)")
+xx = seq(0, max(x), length=100)
+lines(xx, dexp(xx, 1), col="blue", lwd=2)
+mean(x)
+sd(x)
+```
+
+For most purposes, any of the following statements could be used to sample 10 observations from $EXP(1): -log(runif(10))$, $qexp(runif(1), 1)$, or $rexp(10, 1)$. The second statement works because qexp (with second parameter 1) is the quantile function of $EXP(1)$. (PROBLEM 4 uses the quantile transformation to sample from $EXP(1/2)$.) However, the method using *rexp* is preferable because it uses an algorithm that is technically superior to our log-transform method, especially in its treatment of very large simulated values. $\blacksquare$
+
+So far, all of our examples have dealt with continuous distributions. Now we turn to an example where we sample from a binomial distribution.
+
+##EXAMPLE 4
+
+According to genetic theory the probability that any one
+offspring of a particular pair of guinea pigs will have straight hair is $1/4$. Suppose we want to simulate births of six offspring. That is, we want to simulate one realization of $X \sim BINOM(6, 1/4)$. One way to do this is to simulate six observations from $UNIF(0, 1)$. The probability that any one of these uniform observations is less than $1/4$ is $1/4$. So $X$ can be simulated as the sum of six logical variables, where **FALSE** is interpreted as $0$ and **TRUE** as $1: sum(runif(6) < 1/4))$. The sample function is also programmed to use *runif*. So $sum(sample(c(0,1), 6, repl=T, prob=c(3/4, 1/4))$ is an equivalent way to simulate $X$ as a sum.
+
+Because $\textbf{R}$ defines the quantile function for a discrete random variable in just the right way, one can use the quantile function approach: $qbinom(runif(1), 6, 1/4)$. The the second method has the advantage of requiring only one random value from $UNIF(0, 1)$, while the first—somewhat wastefully—requires six. In this case, it turns out that the quantile transform method is exactly equivalent to $rbinom(1, 6, 1/4)$.
+
+For a discrete random variable $X$, $\textbf{R}$ defines $F_X(u)$ as the minimum of the values $x$ such that $F_X(x) /ge u$. The left panel of FIGURE C shows the CDF of $BINOM(6, 1/4)$, where the vertical reference segments (dotted) represent individual binomial probabilities $P(X = i)$, $i = 0, 1, . . . , 6$. The right panel shows the corresponding quantile function, where the horizontal segments of the function (heavy) represent these same probabilities.  PROBLEM 5 shows $\textbf{R}$ code for a simplified version of this figure. $\blacksquare$
+
+```{r}
+par(mfrow=c(1,2))
+
+xx <- seq(-.5, 6.5, length=1000)
+plot(xx, pbinom(xx, 6, 1/4), type="s", lty="dotted",col="darkred", xlab="Number of Successes",ylab="CDF")
+points(xx, pbinom(xx, 6, 1/4), pch=20,col="darkgreen")
+points(0:6, pbinom(0:6, 6, 1/4), pch=19)
+qq <- seq(0, 1, length=1000)
+plot(qq, qbinom(qq, 6, 1/4), type="s", lty="dotted",col="darkgreen", xlab="Cumulative Probability", ylab="Quantile")
+points(qq, qbinom(qq, 6, 1/4), pch=20,col="darkred")
+q <- pbinom(0:6, 6, 1/4)
+points(q, qbinom(q, 6, 1/4), pch=19)
+par(mfrow=c(1,1))
+```
+
+In practice, when available, it is best to use random functions programmed into R (for example, *rbeta*, *rbeta*, *rbinom*) because they implement algorithms that are fast and accurate. However, some useful distributions are not programmed into the base package of $\textbf{R}$. It may be possible to use the quantile transformation of standard uniform to simulate observations from such a distribution.
+
+## EXAMPLE 5. 
+
+The Pareto family of distributions is sometimes useful
+in economics, actuarial science, geology, and other sciences, but it is not included the base package of $\textbf{R}$. One member of this family has density function $f(x) = 3/x^4$ and CDF $F(x) = 1 − x^{−3}$, for $x > 1$; mean 1.5 and variance 0.75. The following $\textbf{R}$ code simulates a sample of 5000 observations from this distribution.  
+
+```{r}
+set.seed(123)
+m <- 5000
+kap <- 3
+
+xx <- seq(1, 10, length=1000)
+pdf <- kap/xx^(kap+1)
+x <- (1 - runif(m))^(-1/kap)
+
+cutp=seq(0, max(x)+.5, by=.5)
+hist(x[x<10], prob=T); lines(xx, pdf)
+
+mean(x); var(x)
+
+```
+
+FIGURE D shows a histogram of the results (except for the six observations that exceed 10) along with the density function. $\blacksquare$
+
+# Transformations Involving Standard Normal Distributions
