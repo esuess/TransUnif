@@ -53,8 +53,6 @@ lines(hh, dunif(hh), col="blue", lwd=2)
 hist(x, breaks=sqrt(cutp), prob=T, col="wheat",
 xlim=c(-.1, 1.1), main="BETA(1,2)")
 lines(hh, dbeta(hh, 2, 1), col="blue", lwd=2)
-par(mfrow=c(1,1))
-
 ```
 
 Graphical results are shown in FIGURE A. Each bar in each histogram represents about a thousand points, representing one tenth of the total probability. Density functions of $UNIF(0, 1)$ and $BETA(2, 1)$ are superimposed on their respective histograms.
@@ -113,7 +111,6 @@ plot(qq, qbinom(qq, 6, 1/4), type="s", lty="dotted",col="darkgreen", xlab="Cumul
 points(qq, qbinom(qq, 6, 1/4), pch=20,col="darkred")
 q <- pbinom(0:6, 6, 1/4)
 points(q, qbinom(q, 6, 1/4), pch=19)
-par(mfrow=c(1,1))
 ```
 
 In practice, when available, it is best to use random functions programmed into R (for example, *rbeta*, *rbeta*, *rbinom*) because they implement algorithms that are fast and accurate. However, some useful distributions are not programmed into the base package of $\textbf{R}$. It may be possible to use the quantile transformation of standard uniform to simulate observations from such a distribution.
@@ -147,7 +144,7 @@ FIGURE D shows a histogram of the results (except for the six observations that 
 
 # Transformations Involving Standard Normal Distributions
 
-Normal distributions play an important role in probability and statistics, and so it is important to know how to simulate samples from normal distributions. The $\textbf{R}$ function rnorm samples from the standard normal distribution. At the end of this section we indicate how to transform standard uniform observations into standard normal ones. In the first example below, we look at some relationships between standard normal and other distributions.
+Normal distributions play an important role in probability and statistics, and so it is important to know how to simulate samples from normal distributions. The $\textbf{R}$ function *rnorm* samples from the standard normal distribution. At the end of this section we indicate how to transform standard uniform observations into standard normal ones. In the first example below, we look at some relationships between standard normal and other distributions.
 
 ## EXAMPLE 6
 
@@ -167,7 +164,6 @@ z2 <- rnorm(m)
 x <- z1^2
 q <- z1^2 + z2^2
 
-#par(mfrow=c(2,1))
 mx <- max(x, q)
 xx <- seq(0, mx, length=1000)
 hist(x, prob=T, ylim=c(0,.7), xlim=c(0, mx),col="wheat", main="CHISQ(1)")
@@ -175,7 +171,7 @@ lines(xx, dchisq(xx, 1), col="blue", lwd=2)
 hist(q, prob=T, ylim=c(0,.7), xlim=c(0, mx),col="wheat", main="CHISQ(2)")
 lines(xx, dexp(xx, 1/2), col="red")
 lines(xx, dchisq(xx, 2), col="blue", lwd=2,lty="dashed")
-#ar(mfrow=c(1,1))
+
 
 mean(x)
 var(x)
@@ -208,7 +204,6 @@ m <- 10000
 z1 <- rnorm(m)
 z2 = rnorm(m)
 
-#par(mfrow=c(2,1))
 # squared distance from origin
 d2 <- z1^2 + z2^2
 hist(d2, prob=T, col="wheat")
@@ -240,4 +235,135 @@ Box-Muller transformation. It is explored further in PROBLEM 9. $\blacksquare$
 where $a = 0$. Use the method of EXAMPLE 1 to find the distribution of $X$.
 In particular, what is the distribution of $Y = 1 − U$?
 
-2) Two
+2) Let $U \sim UNIF(0, 1)$. Use the method of EXAMPLE 1 to find the density
+function of $X$ in parts (a) and (b). Be sure to specify the interval on which
+each density function takes positive values.
+
+   a) As in EXAMPLE 2, let $X = \sqrt{U}$. Show formally that $X \sim BETA(2, 1)$.
+   b) In general, if $X = U^{1/\alpha}$, where $\beta > 0$, show that $EXP \sim BETA(\alpha, 1)$.
+   c) Modify the $\textbf{R}$ code in EXAMPLE 2 to illustrate part (b) with $\alpha = 2$.
+Write a suitable caption for the resulting figure.
+
+3) (Intermediate) Acceptance-rejection sampling. Sometimes the quantile
+function is difficult or impossible to find or to express in closed form. Here
+we explore a possible alternative method of sampling from such a distribution. Suppose we wish to sample from the distribution $BETA(2, 2)$.
+
+   a) Sketch the density function of this distribution, and show that the
+rectangle with diagonal corners at $(0, 0)$ and $(1, 1.5)$ contains the non-
+negative part of the density curve. Also, find the mean and variance
+of this distribution.
+   b) We generate random points within the rectangle of part (a), accepting
+those that fall beneath the density function. The x-coordinates of the
+accepted points form the simulated sample. Run the $\textbf{R}$ code below
+and explain the purpose of each statement. For your run, what is the
+size of the simulated sample?
+
+```{r}
+al <- 2
+be <- 2
+m = 600000
+
+h <- runif(m)
+v <- runif(m, 0, 1.5)
+x <- h[v < dbeta(h, al, be)]
+hist(x, prob=T)
+xx <- seq(0, 1, length=1000)
+lines(xx, dbeta(xx, al, be))
+length(x)
+mean(x)
+var(x)
+```
+
+4) Consider the distribution $EXP(1/2)$. That is, the exponential distribution with rate 1/2 and mean 2.
+
+   a) Write the density function of this distribution. Find its quantile function.
+   b) Simulate 10,000 observations from this distribution.
+   c) Modify the $\textbf{R}$ code of EXAMPLE 3 to make a histogram of the observations in part (b). making a figure similar to FIGURE B.
+   
+5) Run the R code below to make a somewhat simplified version of FIGURE C. Explain the code. (In plot, parameter **type="s"** indicates a step
+graph.)   
+
+```{r}
+par(mfrow=c(1,2))
+xx <- seq(-.5, 6.5, length=1000)
+plot(xx, pbinom(xx, 6, 1/4), type="s", xlab="Successes", ylab="CDF")
+qq <- seq(0, 1, length=1000)
+plot(qq, qbinom(qq, 6, 1/4), type="s", xlab="Cum Prob", ylab="Quantile")
+```
+
+6) Consider the distribution with density function $f(x) = 0.8 + 1.2x$, for
+$0 < x < 1$. Use integration to find the CDF, and then find the quantile
+function. Use the quantile transformation to simulate 100,000 observations
+from this distribution. Compare the mean and standard deviation of your
+observations with the mean and standard deviation of this distribution.
+
+7) If $Z_1, . . . , Z_5$ are independently distributed standard normal random
+variables, then $Q = Z_1 + · · · +Z_5 \sim CHISQ(5)$. Simulate 10,000 observations from this distribution using the R function *rnorm*. Make a histogram of the resulting observations and superimpose the density function of $CHISQ(5)$ on it.
+
+8) In EXAMPLE 7, suppose one arrow hits 2 units to the right of the
+origin (bull’s eye) and 1 unit above, so that $Z_1 = 2$ and $Z_2 = 1$. Show that
+$D = 1.73$ and $\Theta = 26.6$ degrees. What if $Z_1 = −2$ and $Z_2 = 1$?
+
+9) *Box-Muller Transformation.* Let $U_1$ and $U_2$ be independent observations
+from $UNIF(0, 1)$. Then transform the joint distribution of $(U_1, U_2)$ to the
+disjoint distribution of $(Z_1, Z_2)$ according to the Box-Muller transformation, expressed by the following equations.
+
+$$Z_1 = \sqrt{-2\ln U_1}\sin{2\pi U_2}$$
+$$Z_1 = \sqrt{-2\ln U_1}\cos{2\pi U_2}$$
+
+The $\textbf{R}$ code below uses this transformation to simulate 2500 pairs of standard normal values (5000 altogether). These 2500 points are plotted in
+the left panel of the resulting figure. Then 2500 pairs of standard normal
+values are generated with the $\textbf{R}$ function *runif* and plotted in the right panel. Because *rnorm* also also implements the Box-Muller transformation
+it is not surprising that the two plots are very similar.
+
+```{r}
+set.seed(1212)
+m <- 2500
+u1 <- runif(m)
+u2 <- runif(m)
+
+z1.BoxM <- sqrt(-2*log(u1))*sin(2*pi*u2)
+z2.BoxM <- sqrt(-2*log(u1))*cos(2*pi*u2)
+z1.rnorm <- rnorm(m)
+z2.rnorm <- rnorm(m)
+
+par(mfrow=c(1,2))
+plot(z1.BoxM, z2.BoxM, pch=20, xlim=c(-4,4), ylim=c(-5,5))
+plot(z1.rnorm, z2.rnorm, pch=20, xlim=c(-4,4), ylim=c(-5,5))
+```
+
+10) Let $Z = U_1 + U_2 + · · · + U_12 − 6$, where the $U_i$ are independent and
+identically distributed (iid) as $UNIF(0, 1)$.
+
+a)Show that $E[U_i] = 1/2$ and $V(U_i) = 1/12$. Thus argue that $E(Z) = 0$
+and $V(Z) = 1$. Because $Z$ is based on a sum of iid random variables
+the Central Limit Theorem, discussed in the next chapter, indicates
+that $Z$ may be nearly normal—and, in view of its mean and variance,
+nearly standard normal. As we see below, the agreement with a standard normal distribution is reasonably good. Before computers could easily do transcendental functions this method was sometimes used to get one (roughly) standard normal observation from 12 standard uniform observations.
+
+b) Run the $\textbf{R}$ code below to simulate 1000 "standard normal" random
+variables and test agreement with a normal distribution. Reasonably
+good fit of the histogram to the density curve in the left panel of
+the resulting figure is a good indication of normality. A more precise
+assessment of the fit to normality appears in the right panel. If the
+points in the quantile-quantile (Q-Q) plot are essentially linear that
+indicates a good fit to normality. The P-value of a Kolmogorov-Smirnov test of goodness-of-fit is also shown in the right panel; a value
+above 5% indicates that no significant evidence against normality has
+been found. Make several different runs and report your findings.
+
+```{r}
+m <- 1000
+n <- 12
+u <- runif(m*n)
+DTA <- matrix(u, nrow=m)
+z <- rowSums(DTA) - 6
+par(mfrow=c(1,2))
+mn <- min(-3.8, min(z)); mx = max(3.8, max(z))
+hist(z, prob=T, ylim=c(0,.42), xlim=c(mn,mx), col="wheat")
+zz <- seq(mn, mx, length=100)
+lines(zz, dnorm(zz), col="blue", lwd = 2)
+qqnorm(z, datax=T, ylim=c(mn, mx))
+pval <- round(ks.test(z, pnorm)$p,2)
+text(1.5, -2.5, paste("KS.P-val =",pval))
+```
+
