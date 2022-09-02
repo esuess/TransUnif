@@ -163,17 +163,15 @@ z2 <- rnorm(m)
 x <- z1^2
 q <- z1^2 + z2^2
 
-par(mfrow=c(2,1))
-mx=max(x, q); xx = seq(0, mx, length=1000)
-hist(x, prob=T, ylim=c(0,.7), xlim=c(0, mx),
-col="wheat", main="CHISQ(1)")
+#par(mfrow=c(2,1))
+mx <- max(x, q)
+xx <- seq(0, mx, length=1000)
+hist(x, prob=T, ylim=c(0,.7), xlim=c(0, mx),col="wheat", main="CHISQ(1)")
 lines(xx, dchisq(xx, 1), col="blue", lwd=2)
-hist(q, prob=T, ylim=c(0,.7), xlim=c(0, mx),
-col="wheat", main="CHISQ(2)")
+hist(q, prob=T, ylim=c(0,.7), xlim=c(0, mx),col="wheat", main="CHISQ(2)")
 lines(xx, dexp(xx, 1/2), col="red")
-lines(xx, dchisq(xx, 2), col="blue", lwd=2,
-lty="dashed")
-par(mfrow=c(1,1))
+lines(xx, dchisq(xx, 2), col="blue", lwd=2,lty="dashed")
+#ar(mfrow=c(1,1))
 
 mean(x)
 var(x)
@@ -206,7 +204,7 @@ m <- 10000
 z1 <- rnorm(m)
 z2 = rnorm(m)
 
-par(mfrow=c(2,1))
+#par(mfrow=c(2,1))
 # squared distance from origin
 d2 <- z1^2 + z2^2
 hist(d2, prob=T, col="wheat")
@@ -217,7 +215,6 @@ th <- ((180/pi)*atan(z1/z2) + 180*(z1<0)) %% 360
 hist(th, prob=T, col="wheat")
 tt <- seq(0, 360, length = 1000)
 lines(tt, dunif(tt, 0, 360), col="blue", lwd=2)
-par(mfrow=c(1,1))
 ```
 
 Thus the position of the hit can be modeled in polar coordinates by
